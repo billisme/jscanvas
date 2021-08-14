@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+http://codegolf.stackexchange.com/questions/35569/tweetable-mathematical-art#
+-->
+<html>
+    <head>
+        <title>Game of life</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>Game of life</div>
+        <canvas id="mc" width="640" height="640" style="border: 1px solid black"></canvas>
+        <script type="text/javascript">
+            DIM = 640;
+
+            var board = [];
+            for (var i = 0; i < DIM; i++) {
+                board[i] = [];
+                for (var j = 0; j < DIM; j++) {
+                    board[i][j] = Math.random() > 0.5 ? 1 : 0;
+                }
+            }
+            /**
+             * @param {number[][]} board
+             * @return {void} Do not return anything, modify board in-place instead.
+             */
+            var gameOfLife = function (board) {
+                var xlength = board.length, ylength = board[0].length;
+                var b = [];
+                for (var i = 0; i < xlength; i++) {
+                    b[i] = [];
+                    for (var j = 0; j < ylength; j++) {
+                        north = j + 1;
+                        south = j - 1;
+                        east = i + 1;
+                        west = i - 1;
+
+                        life = board[i][j];
+                        liveNeighbour = (north > ylength - 1 ? 0 : board[i][north]) + (south < 0 ? 0 : board[i][south]) + (east > xlength - 1 ? 0 : board[east][j]) + (west < 0 ? 0 : board[west][j]) + (east > xlength - 1 || north > ylength - 1 ? 0 : board[east][north]) + (east > xlength - 1 || south < 0 ? 0 : board[east][south]) + (west < 0 || north > ylength - 1 ? 0 : board[west][north]) + (west < 0 || south < 0 ? 0 : board[west][south]);
+
+                        switch (liveNeighbour) {
+                            case 0:
+                            case 1:
+                            {
+                                life = 0;
+                                break;
+                            }
+                            case 2:
+                            {
+                                break;
+                            }
+                            case 3:
+                            {
+                                life = 1;
+                                break;
+                            }
+                            case 4:
+                            case 5:
+                            case 6:
+                            case 7:
+                            case 8:
+                            {
+                                life = 0;
+                                break;
+                            }
+                        }
+                        b[i][j] = life;
+                    }
+                }
+
+                for (i = 0; i < xlength; ++i) {
+                    for (j = 0; j < ylength; ++j) {
+                        board[i][j] = b[i][j];
+                    }
+                }
+            };
+
+
+            var BL = function (i, j) {
+                x = 0;//board[i][j];
+                
+                return 255 * x;
+            };
+
+            var RD = function (i, j) {
+                x = 0;//board[i][j];
+
+                return 255 * x;
+            };
+
+            var GR = function (i, j) {
+                x = board[i][j];
+
+                return 255 * x;
+            };
+
+//保存图像像素
+            var canvas = document.getElementById('mc');
+            var ctx = canvas.getContext("2d");
+            //var width = parseInt(canvas.getAttribute('width'));
+            //var height = parseInt(canvas.getAttribute('height'));
+            var width = DIM;
+            var height = DIM;
+
+            var draw = function () {
+                var imageData = ctx.createImageData(width, height);
+                var p = 0;
+                for (var w = 0; w < width; w += 1) {
+                    for (var h = 0; h < height; h += 1)
+                    {
+                        imageData.data[p + 0] = RD(w, h) & 255;
+                        imageData.data[p + 1] = GR(w, h) & 255;
+                        imageData.data[p + 2] = BL(w, h) & 255;
+                        imageData.data[p + 3] = 255;
+                        p += 4;
+                    }
+                }
+                ctx.putImageData(imageData, 0, 0);
+            };
+
+
+            function update() {
+                ctx.clearRect(0, 0, DIM, DIM);
+                draw();
+                gameOfLife(board);
+                setTimeout(function () {
+                    update();
+                }, 1);
+            }
+
+            update();
+
+        </script>
+    </body>
+</html>
